@@ -13,8 +13,16 @@ This is a simple processor versatile for any application
 
 ## How to test
 
-Explain how to use your project
-TODO: add doc
+Current test circuit (only dedicated pins, no clock needed):
+
+| Function | Inputs | Outputs |
+|---|---|---|
+| Identity | ui[0] | uo[0] = ui[0] |
+| Inverter | ui[1] | uo[1] = not ui[1] |
+| Half adder | ui[2], ui[3] | uo[2] = sum (xor), uo[3] = carry (and) |
+| 2-to-4 decoder | ui[4] (low), ui[5] (high) | exactly one of uo[4..7] is 1, selected by the 2-bit number |
+
+Example: ui[5]=1, ui[4]=0 selects 2, so uo[6] is 1 and uo[4], uo[5], uo[7] are 0.
 
 ## External hardware
 

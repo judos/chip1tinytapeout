@@ -25,16 +25,18 @@ async def test_project(dut):
 
     dut._log.info("Test project behavior")
 
-    # Set the input values you want to test
-    dut.ui_in.value = 20
-    dut.uio_in.value = 30
+    # Exhaustively test all combinations of the 6 used inputs
+    for v in range(64):
+        dut.ui_in.value = v
+        await ClockCycles(dut.clk, 1)
 
-    # Wait for one clock cycle to see the output values
-    await ClockCycles(dut.clk, 1)
+        b = [(v >> i) & 1 for i in range(8)]
+        expected = 0
+        expected |= b[0] << 0                # identity
+        expected |= (1 - b[1]) << 1          # invert
+        expected |= (b[2] ^ b[3]) << 2       # half adder sum
+        expected |= (b[2] & b[3]) << 3       # half adder carry
+        expected |= 1 << (4 + (b[5] << 1 | b[4]))  # decoder
 
-    # The following assersion is just an example of how to check the output values.
-    # Change it to match the actual expected output of your module:
-    assert dut.uo_out.value == 50
-
-    # Keep testing the module by changing the input values, waiting for
-    # one or more clock cycles, and asserting the expected output values.
+        got = int(dut.uo_out.value)
+        assert got == expected, f"ui_in={v:08b}: uo_out={got:08b}, expected {expected:08b}"
